@@ -40,19 +40,23 @@ class KMeansND:
 
     PARAMETERS:
 
-    initialCentroids: K x N array of K initial centroids with N features/coordinates.
+    initialCentroids: K x N array of K initial centroids with N
+        features/coordinates.
 
     points: M x N array of M points with N features/coordinates.
 
     METHODS:
 
-    (centroids, classifications, iterations) = getCentroids(): Perform K-means
-        clustering. Return a tuple containing the array of centroid coordinates,
-        an M x 1 array of point classifications, and number of iterations required.
+    (centroids, classifications, iterations) = getCentroids()
+        Perform K-means clustering. Return a tuple containing the
+        array of centroid coordinates, an M x 1 array of point
+        classifications, and number of iterations required.
 
-    getGenerator(): Return a generator function to step through K-means iterations.
-        Each call of the generator returns the current centroids, classifications,
-        and iteration, beginning with the initial centroids and classifications.
+    getGenerator()
+        Return a generator function to step through K-means iterations.
+        Each call of the generator returns the current centroids,
+        classifications, and iteration, beginning with the initial
+        centroids and classifications.
     '''
     def __init__(self, initialCentroids, points):
         if initialCentroids.shape[1] != points.shape[1]:
