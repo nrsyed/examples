@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 import colorsys
 import sys
 from datetime import datetime
-from kmeansNd import *
+from KMeansND import *
 
 K = 12   # Number of clusters (centroids) to compute
 numClusters = 12     # Number of clusters to generate
