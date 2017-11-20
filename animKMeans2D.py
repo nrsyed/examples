@@ -43,9 +43,7 @@ def initializeCentroids(K, points):
     return initialCentroids
 
 def animate(clusterInfo):
-    currentCentroids = clusterInfo[0]
-    classifications = clusterInfo[1]
-    iteration = clusterInfo[2]
+    (currentCentroids, classifications, iteration) = clusterInfo
     for k in range(K):
         updatedClusterData = points[classifications == k,:]
         clusterObjList[k].set_data(updatedClusterData[:,0], updatedClusterData[:,1])
@@ -79,7 +77,7 @@ def setAxisLimits(ax, points):
 # Initialize data and K-means clustering. Show and animate plot.
 points = generateClusters()
 initialCentroids = initializeCentroids(K, points)
-genFunc = KMeansND(initialCentroids, points).getGenerator()
+genFunc = KMeansND(initialCentroids, points).getGeneratorFunc()
 setAxisLimits(ax, points)
 animObj = animation.FuncAnimation(fig, animate, frames=genFunc,
     repeat=True, interval=500)
@@ -103,7 +101,7 @@ while 1:
         print('\nRandomizing clusters and centroids...')
         points = generateClusters()
         initialCentroids = initializeCentroids(K, points)
-        genFunc = KMeansND(initialCentroids, points).getGenerator()
+        genFunc = KMeansND(initialCentroids, points).getGeneratorFunc()
         setAxisLimits(ax, points)
         animObj = animation.FuncAnimation(fig, animate, frames=genFunc,
             repeat=True, interval=500)
@@ -111,7 +109,7 @@ while 1:
         animObj._stop()
         print('\nRandomizing centroids...')
         initialCentroids = initializeCentroids(K, points)
-        genFunc = KMeansND(initialCentroids, points).getGenerator()
+        genFunc = KMeansND(initialCentroids, points).getGeneratorFunc()
         animObj = animation.FuncAnimation(fig, animate, frames=genFunc,
             repeat=True, interval=500)
         fig.canvas.draw()

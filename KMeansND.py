@@ -29,8 +29,9 @@ def recalcCentroids(centroids, points, classifications):
     newCentroids = np.zeros((K, N))
     for k in range(K):
         if sum(classifications == k) > 0:
-            newCentroids[k,:] = (np.sum(
-                points[classifications == k,:], axis=0) / sum(classifications == k))
+            newCentroids[k,:] = (
+                np.sum(points[classifications == k,:], axis=0)
+                / sum(classifications == k))
         else:
             newCentroids[k,:] = centroids[k,:]
     return newCentroids
@@ -95,5 +96,5 @@ class KMeansND:
                 iteration += 1
             yield (centroids, classifications, iteration)
 
-    def getGenerator(self):
+    def getGeneratorFunc(self):
         return self._generatorFunc
