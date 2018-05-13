@@ -25,65 +25,65 @@ class Grassfire:
     COLOR_OBST = np.array([0, 0, 0])
     COLOR_PATH = np.array([1, 1, 0])
 
-    def random_grid(cls, rows=16, cols=16, obstacleProb=0.3):
+    def random_grid(self, rows=16, cols=16, obstacleProb=0.3):
         '''Return a 2D numpy array representing a grid of randomly placed
         obstacles (where the likelihood of any cell being an obstacle
         is given by obstacleProb) and randomized start/destination cells.
         '''
         obstacleGrid = np.random.random_sample((rows, cols))
-        grid = cls.UNVIS * np.ones((rows, cols), dtype=np.int)
-        grid[obstacleGrid <= obstacleProb] = cls.OBST
+        grid = self.UNVIS * np.ones((rows, cols), dtype=np.int)
+        grid[obstacleGrid <= obstacleProb] = self.OBST
 
         # Randomly set start and destination cells.
-        cls.set_start_dest(grid)
+        self.set_start_dest(grid)
         return grid
 
-    def set_start_dest(cls, grid):
+    def set_start_dest(self, grid):
         '''For a given grid, randomly select start and destination cells.'''
         (rows, cols) = grid.shape
 
         # Remove existing start and dest cells, if any.
-        grid[grid == cls.START] = cls.UNVIS
-        grid[grid == cls.DEST] = cls.UNVIS
+        grid[grid == self.START] = self.UNVIS
+        grid[grid == self.DEST] = self.UNVIS
 
         # Randomize start cell.
         validStartCell = False
         while not validStartCell:
             startIndex = random.randint(0, rows * cols - 1)
             startIndices = np.unravel_index(startIndex, (rows, cols))
-            if grid[startIndices] != cls.OBST:
+            if grid[startIndices] != self.OBST:
                 validStartCell = True
-                grid[startIndices] = cls.START
+                grid[startIndices] = self.START
 
         # Randomize destination cell.
         validDestCell = False
         while not validDestCell:
             destIndex = random.randint(0, rows * cols - 1)
             destIndices = np.unravel_index(destIndex, (rows, cols))
-            if grid[destIndices] != cls.START and grid[destIndices] != cls.OBST:
+            if grid[destIndices] != self.START and grid[destIndices] != self.OBST:
                 validDestCell = True
-                grid[destIndices] = cls.DEST
+                grid[destIndices] = self.DEST
 
-    def color_grid(cls, grid):
+    def color_grid(self, grid):
         '''Return MxNx3 pixel array ("color grid") corresponding to a grid.'''
         (rows, cols) = grid.shape
         colorGrid = np.zeros((rows, cols, 3), dtype=np.float)
 
-        colorGrid[grid == cls.OBST, :] = cls.COLOR_OBST
-        colorGrid[grid == cls.UNVIS, :] = cls.COLOR_UNVIS
-        colorGrid[grid == cls.START, :] = cls.COLOR_START
-        colorGrid[grid == cls.DEST, :] = cls.COLOR_DEST
-        colorGrid[grid > cls.START, :] = cls.COLOR_VIS
-        colorGrid[grid == cls.PATH, :] = cls.COLOR_PATH
+        colorGrid[grid == self.OBST, :] = self.COLOR_OBST
+        colorGrid[grid == self.UNVIS, :] = self.COLOR_UNVIS
+        colorGrid[grid == self.START, :] = self.COLOR_START
+        colorGrid[grid == self.DEST, :] = self.COLOR_DEST
+        colorGrid[grid > self.START, :] = self.COLOR_VIS
+        colorGrid[grid == self.PATH, :] = self.COLOR_PATH
         return colorGrid
 
-    def reset_grid(cls, grid):
+    def reset_grid(self, grid):
         '''Reset cells that are not OBST, START, or DEST to UNVIS.'''
-        cellsToReset = ~((grid == cls.OBST) + (grid == cls.START)
-            + (grid == cls.DEST))
-        grid[cellsToReset] = cls.UNVIS
+        cellsToReset = ~((grid == self.OBST) + (grid == self.START)
+            + (grid == self.DEST))
+        grid[cellsToReset] = self.UNVIS
 
-    def _check_adjacent(cls, grid, cell, currentDepth):
+    def _check_adjacent(self, grid, cell, currentDepth):
         '''For given grid, check the cells adjacent to a given
             cell. If any have a depth (positive int) greater
             than the current depth, update them with the current
@@ -107,17 +107,17 @@ class Grassfire:
             if not (0 <= rowToCheck < rows and 0 <= colToCheck < cols):
                 continue
             # Check if destination found.
-            elif grid[rowToCheck, colToCheck] == cls.DEST:
-                return cls.DEST
+            elif grid[rowToCheck, colToCheck] == self.DEST:
+                return self.DEST
             # If adjacent cell unvisited or depth > currentDepth + 1,
             # mark with new depth.
-            elif (grid[rowToCheck, colToCheck] == cls.UNVIS
+            elif (grid[rowToCheck, colToCheck] == self.UNVIS
                 or grid[rowToCheck, colToCheck] > currentDepth + 1):
                 grid[rowToCheck, colToCheck] = currentDepth + 1
                 numCellsUpdated += 1
         return numCellsUpdated
 
-    def _backtrack(cls, grid, cell, currentDepth):
+    def _backtrack(self, grid, cell, currentDepth):
         '''This function is used if the destination is found. Similar
             to _check_adjacent(), but returns coordinates of first
             surrounding cell whose value matches "currentDepth", ie,
@@ -133,10 +133,10 @@ class Grassfire:
                 continue
             elif grid[rowToCheck, colToCheck] == currentDepth:
                 nextCell = (rowToCheck, colToCheck)
-                grid[nextCell] = cls.PATH
+                grid[nextCell] = self.PATH
                 return nextCell
 
-    def find_path(cls, grid):
+    def find_path(self, grid):
         '''Execute grassfire algorithm by spreading from the start cell out.
             If destination is found, use _backtrack() to trace path from
             destination back to start. Returns a generator function to
@@ -155,8 +155,8 @@ class Grassfire:
                 matchingCells = list(zip(depthIndices[0], depthIndices[1]))
 
                 for cell in matchingCells:
-                    adjacentVal = cls._check_adjacent(grid, cell, depth)
-                    if adjacentVal == cls.DEST:
+                    adjacentVal = self._check_adjacent(grid, cell, depth)
+                    if adjacentVal == self.DEST:
                         destFound = True
                         break
                     else:
@@ -169,11 +169,11 @@ class Grassfire:
                 yield
 
             if destFound:
-                destCell = np.where(grid == cls.DEST)
+                destCell = np.where(grid == self.DEST)
                 backtrackCell = (destCell[0].item(), destCell[1].item())
                 while depth > 0:
                     # Work backwards until return to start cell.
-                    nextCell = cls._backtrack(grid, backtrackCell, depth)
+                    nextCell = self._backtrack(grid, backtrackCell, depth)
                     backtrackCell = nextCell
                     depth -= 1
                     yield
